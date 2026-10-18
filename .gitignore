@@ -1,0 +1,19 @@
+# 家の機器の住所（IP・MAC・ホスト名）が入る採取データ＝手元のPCだけ（共通ガイド §3）
+baseline.json
+history/
+snapshots/
+alerts_log.csv
+*.csv
+reports/
+
+# 見張りの設定（守りの地図＝出さない）
+config.json
+
+# 一族の内部の記録（日誌・棚卸）は作業場に置き、GitHub には出さない
+日誌/
+APP_TANA/
+
+# 作り直せる物・手元の控え
+__pycache__/
+*.pyc
+_backups/
