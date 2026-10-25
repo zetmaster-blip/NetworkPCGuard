@@ -686,7 +686,10 @@ class Scanner:
                 "ip": dip, "mac": mac, "host": host, "vendor": vendor, "type": dtype,
                 "note": note, "ports": ports, "ttl": ttl, "verdict": verdict,
                 "score": score, "reasons": reasons, "danger": danger, "danger_ports": dnames,
-                "alive": dip in alive,
+                # 動いている＝ping に返事した、または入口が1つでも開いていた。
+                # ping に返事しない機器（家電・ルーター類・FW設定のPC）も多いため、
+                # ping だけで決めると動いている機器を差分の判定から外してしまう（2026-10-26 修正）。
+                "alive": (dip in alive) or bool(ports),
                 "benign_ports": sorted(set(ports) & benign),
             })
 
@@ -1387,8 +1390,9 @@ class App(tk.Tk):
             f"IP: {d['ip']}", f"MAC: {d['mac']}", f"ホスト名: {d['host'] or '(なし)'}",
             f"メーカー: {d['vendor']}", f"推定種別: {d['type'] or '(不明)'}",
             f"TTL: {d['ttl'] if d['ttl'] is not None else '(不明)'}",
-            "ping応答: " + ("あり" if d.get("alive", True)
-                          else "なし（Windowsの住所録＝ARP表にだけ残っていた。電源断の可能性）"),
+            "応答: " + ("pingあり" if d.get("ttl") is not None
+                        else ("pingなし・入口が開いていた（動いている）" if d.get("alive", True)
+                              else "なし（Windowsの住所録＝ARP表にだけ残っていた。電源断の可能性）")),
             f"判定: {d['verdict']} (スコア {d['score']})",
             "判定理由: " + ("、".join(d["reasons"]) or "(なし)"),
             f"危険度: {d['danger']}",
